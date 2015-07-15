@@ -1,0 +1,32 @@
+{
+  "0": {
+    "type": "player",
+    "x": 81,
+    "y": 728
+  },
+  "1": {
+    "type": "baseEnemy",
+    "x": 430,
+    "y": 720
+  },
+  "2": {
+    "type": "trigger",
+    "x": 176,
+    "y": 536,
+    "properties": {
+      "xMin": -32,
+      "xMax": 32,
+      "execute": "base/hidden"
+    }
+  },
+  "3": {
+    "type": "trigger",
+    "x": 776,
+    "y": 592,
+    "properties": {
+      "yMin": -48,
+      "yMax": 48,
+      "execute": "demo/trigger"
+    }
+  }
+}
