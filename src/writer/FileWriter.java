@@ -13,8 +13,9 @@ public class FileWriter {
 
 	public static byte FILE_COUNT = 0;
 
-	public FileWriter(String fileIn, String name) throws IOException {
+	public FileWriter(String fileIn) throws IOException {
 		File file = new File(fileIn);
+		String name = file.getName().substring(0, file.getName().lastIndexOf("."));
 
 		FileInputStream fileStream = new FileInputStream(file);
 
