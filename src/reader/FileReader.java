@@ -1,7 +1,9 @@
 package reader;
 
 import java.io.*;
+import java.util.zip.DataFormatException;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
 
 public class FileReader {
 	private String fileName    = "";
@@ -9,6 +11,8 @@ public class FileReader {
 	private String fileIn;
 	private int fileContentSize;
 	private int fileContentOffset;
+
+	public final static int MAX_FILE_SIZE = 10000;
 
 	public FileReader(int fileOffset, String fileIn, byte[] gaff) {
 		this.fileIn = fileIn;
@@ -26,7 +30,7 @@ public class FileReader {
 
 	}
 
-	public String read() throws IOException {
+	public String read() throws IOException, DataFormatException {
 		File file = new File(fileIn);
 		FileInputStream fileStream = new FileInputStream(file);
 		byte[] gaff = new byte[(int)file.length()];
@@ -35,19 +39,19 @@ public class FileReader {
 
 		System.arraycopy(gaff, fileContentOffset, fileContentZip, 0, fileContentSize);
 
-		//		Decompression
-		ByteArrayInputStream byteStream = new ByteArrayInputStream(fileContentZip);
-		GZIPInputStream zipStream = new GZIPInputStream(byteStream);
-		InputStreamReader reader = new InputStreamReader(zipStream);
-		BufferedReader in = new BufferedReader(reader);
+		Inflater decompresser = new Inflater();
+		decompresser.setInput(fileContentZip, 0, fileContentZip.length);
+		byte[] result = new byte[MAX_FILE_SIZE];
+		int resultLength = decompresser.inflate(result);
+		decompresser.end();
 
-		String fileContent = "";
-		String tmp;
-		while ((tmp = in.readLine()) != null) {
-			fileContent += tmp;
-		}
+//		//		Decompression
+//		ByteArrayInputStream byteStream = new ByteArrayInputStream(fileContentZip);
+//		GZIPInputStream zipStream = new GZIPInputStream(byteStream);
+//		InputStreamReader reader = new InputStreamReader(zipStream);
+//		BufferedReader in = new BufferedReader(reader);
 
-		return fileContent;
+		return new String(result, 0, resultLength, "UTF-8");
 	}
 
 	public String getFileName() {

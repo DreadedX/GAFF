@@ -1,11 +1,10 @@
 package writer;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.zip.GZIPOutputStream;
+import java.util.zip.Deflater;
 
 public class FileWriter {
 	public byte[] header;
@@ -13,24 +12,31 @@ public class FileWriter {
 
 	public static byte FILE_COUNT = 0;
 
+	public final static int MAX_FILE_SIZE = 10000; //Max file size of 10kB
+
 	public FileWriter(String fileIn) throws IOException {
 		File file = new File(fileIn);
 		String name = file.getName().substring(0, file.getName().lastIndexOf("."));
 
 		FileInputStream fileStream = new FileInputStream(file);
 
-		byte[] fileContentTmp = new byte[(int)file.length()];
+		byte[] fileContentRaw = new byte[(int)file.length()];
 
-		fileStream.read(fileContentTmp, 0, fileContentTmp.length);
+		fileStream.read(fileContentRaw, 0, fileContentRaw.length);
 
-//		Compression
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream((fileContentTmp.length));
-			GZIPOutputStream zipStream = new GZIPOutputStream(byteStream);
-			zipStream.write(fileContentTmp);
-			zipStream.close();
-			byteStream.close();
+//		Deflate
+		byte[] fileContentTmp = new byte[MAX_FILE_SIZE];
+		Deflater compressor = new Deflater();
+		compressor.setInput(fileContentRaw);
+		compressor.finish();
+		int compressedDataLength = compressor.deflate(fileContentTmp);
+		System.out.println(compressedDataLength);
+		compressor.end();
 
-		byte[] fileContent = byteStream.toByteArray();
+		byte[] fileContent = new byte[compressedDataLength];
+
+		System.arraycopy(fileContentTmp, 0, fileContent, 0, compressedDataLength);
+//		End Deflate
 
 		byte fileNameSize = (byte) name.length();
 		int fileContentSize = fileContent.length;

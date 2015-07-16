@@ -1,6 +1,7 @@
 package reader;
 
 import java.io.*;
+import java.util.zip.DataFormatException;
 
 public class Reader {
 	FileReader[] files;
@@ -52,7 +53,7 @@ public class Reader {
 //		}
 	}
 
-	public String read(String name) throws IOException {
+	public String read(String name) throws IOException, DataFormatException {
 		for (FileReader f : files) {
 			if (f.getFileName().equals(name)) {
 				return f.read();
